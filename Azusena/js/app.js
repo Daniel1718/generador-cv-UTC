@@ -582,26 +582,37 @@ function actualizarVistaPreviaCV() {
 }
 
 // =========================================
-// DESCARGAR PDF (COMPATIBLE CON TELÉFONO Y PC)
+// DESCARGAR PDF (SOLUCIÓN DEFINITIVA PARA MÓVIL Y PWA)
 // =========================================
 function descargarPDF() {
   guardarPaso();
-  mostrarAviso('⏳ Generando PDF de tu CV...');
+  mostrarAviso('⏳ Generando PDF, espera un momento...');
 
-  const elemento = document.getElementById('print-cv-area');
-  const nombreArchivo = (appData.nombre || 'Mi_CV').replace(/\s+/g, '_');
+  const original = document.getElementById('print-cv-area');
+  const nombreArchivo = `CV_${(appData.nombre || 'Mi_CV').replace(/\s+/g, '_')}.pdf`;
 
-  const scrollActual = window.scrollY;
-  window.scrollTo(0, 0);
+  const contenedorTemp = document.createElement('div');
+  contenedorTemp.style.position = 'fixed';
+  contenedorTemp.style.left = '-9999px';
+  contenedorTemp.style.top = '0';
+  contenedorTemp.style.width = '794px';
+  contenedorTemp.style.zIndex = '-1';
+
+  const clon = original.cloneNode(true);
+  clon.style.width = '794px';
+  clon.style.minHeight = '1120px';
+  contenedorTemp.appendChild(clon);
+  document.body.appendChild(contenedorTemp);
 
   const opciones = {
     margin: 0,
-    filename: `CV_${nombreArchivo}.pdf`,
-    image: { type: 'jpeg', quality: 0.95 },
+    filename: nombreArchivo,
+    image: { type: 'jpeg', quality: 0.92 },
     html2canvas: {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       allowTaint: true,
+      width: 794,
       windowWidth: 794,
       scrollX: 0,
       scrollY: 0
@@ -611,18 +622,34 @@ function descargarPDF() {
 
   html2pdf()
     .set(opciones)
-    .from(elemento)
-    .toPdf()
-    .get('pdf')
-    .then(function (pdf) {
-      window.scrollTo(0, scrollActual);
-      pdf.save(`CV_${nombreArchivo}.pdf`);
-      mostrarAviso('📄 ¡PDF descargado! Revisa tus descargas.');
+    .from(clon)
+    .outputPdf('blob')
+    .then(function (pdfBlob) {
+      document.body.removeChild(contenedorTemp);
+
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivo;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setTimeout(() => {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+          window.open(url, '_blank');
+        }
+        URL.revokeObjectURL(url);
+      }, 1500);
+
+      mostrarAviso('📄 ¡PDF generado con éxito!');
     })
     .catch(function (err) {
-      window.scrollTo(0, scrollActual);
-      console.error('Error al generar PDF:', err);
-      mostrarAviso('⚠️ Abriendo vista de impresión del sistema...');
+      if (document.body.contains(contenedorTemp)) {
+        document.body.removeChild(contenedorTemp);
+      }
+      console.error('Error PDF:', err);
+      mostrarAviso('⚠️ Usando impresión del teléfono...');
       window.print();
     });
 }
