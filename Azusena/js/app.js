@@ -557,26 +557,50 @@ function actualizarVistaPreviaCV() {
 }
 
 // =========================================
-// DESCARGAR PDF
+// DESCARGAR PDF (COMPATIBLE CON TELÉFONO Y PC)
 // =========================================
 function descargarPDF() {
   guardarPaso();
   mostrarAviso('⏳ Generando PDF de tu CV...');
 
-  setTimeout(() => {
-    const elemento = document.getElementById('print-cv-area');
-    const nombreArchivo = (appData.nombre || 'Mi_CV').replace(/\s+/g, '_');
+  const elemento = document.getElementById('print-cv-area');
+  const nombreArchivo = (appData.nombre || 'Mi_CV').replace(/\s+/g, '_');
 
-    const opciones = {
-      margin: 0,
-      filename: `CV_${nombreArchivo}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+  // Guardamos el scroll actual y subimos arriba para evitar recortes en móvil
+  const scrollActual = window.scrollY;
+  window.scrollTo(0, 0);
 
-    html2pdf().set(opciones).from(elemento).save().then(() => {
-      mostrarAviso('📄 ¡PDF descargado con éxito!');
+  const opciones = {
+    margin: 0,
+    filename: `CV_${nombreArchivo}.pdf`,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      windowWidth: 794,
+      scrollX: 0,
+      scrollY: 0
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf()
+    .set(opciones)
+    .from(elemento)
+    .toPdf()
+    .get('pdf')
+    .then(function (pdf) {
+      window.scrollTo(0, scrollActual);
+      // Descarga directa compatible con Chrome Android y Safari
+      pdf.save(`CV_${nombreArchivo}.pdf`);
+      mostrarAviso('📄 ¡PDF descargado! Revisa tus descargas.');
+    })
+    .catch(function (err) {
+      window.scrollTo(0, scrollActual);
+      console.error('Error al generar PDF:', err);
+      // Respaldo nativo del teléfono si la descarga automática está bloqueada
+      mostrarAviso('⚠️ Abriendo vista de impresión del sistema...');
+      window.print();
     });
-  }, 400);
 }
