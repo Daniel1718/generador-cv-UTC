@@ -5,7 +5,6 @@ const STORAGE_KEY = 'cv_platform_user_data';
 const AUTH_KEY = 'cv_platform_auth';
 const USERS_DB_KEY = 'cv_platform_registered_users';
 
-// Cuenta por defecto incluida
 const DEFAULT_USER = {
   nombre: 'Carlos Daniel Contreras',
   email: 'carlos@ejemplo.com',
@@ -20,9 +19,9 @@ let appData = {
   direccion: '',
   curp: '',
   fechaNacimiento: '',
-  ineNombre: '',
   avatarBase64: '',
   academica: {
+    secu: { escuela: '', especialidad: '', anios: '' },
     prepa: { escuela: '', especialidad: '', anios: '' },
     tsu: { escuela: '', especialidad: '', anios: '' },
     ing: { escuela: '', especialidad: '', anios: '' }
@@ -158,7 +157,6 @@ function handleAuth(mode) {
 
     iniciarSesionExitosa(nuevoUsuario, `🎉 Cuenta creada. ¡Bienvenido, ${nombreReg}!`);
   } else {
-    // Modo Login
     const usuarioEncontrado = users.find(u => u.email === email && u.password === password);
 
     if (!usuarioEncontrado) {
@@ -210,7 +208,7 @@ function actualizarRelojBienvenida() {
 }
 
 // =========================================
-// SUBIDA DE FOTO DE PERFIL E INE (EN MEMORIA)
+// SUBIDA DE FOTO DE PERFIL E IMÁGENES SIMULADAS
 // =========================================
 function handleAvatarUpload(input) {
   const file = input.files[0];
@@ -229,12 +227,15 @@ function handleAvatarUpload(input) {
   reader.readAsDataURL(file);
 }
 
-function handleIneUpload(input) {
+// Solo muestra visualmente que la imagen se subió sin guardarla en localStorage
+function mostrarArchivoSubido(input, statusId) {
   const file = input.files[0];
   if (!file) return;
-  appData.ineNombre = file.name;
-  document.getElementById('ine-status').textContent = `Archivo cargado: ${file.name}`;
-  guardarEnLocalStorage(true, '🪪 INE cargada correctamente');
+  const statusEl = document.getElementById(statusId);
+  if (statusEl) {
+    statusEl.textContent = `✅ Imagen cargada: ${file.name}`;
+  }
+  mostrarAviso(`🖼️ Imagen "${file.name}" cargada`);
 }
 
 // =========================================
@@ -256,6 +257,7 @@ function toggleExperiencia(tiene) {
 function agregarExperienciaItem(data = { empresa: '', fechas: '', puesto: '', comentarios: '' }) {
   const list = document.getElementById('lista-experiencias');
   const index = list.children.length + 1;
+  const uniqueStatusId = `exp-img-status-${Date.now()}-${index}`;
 
   const div = document.createElement('div');
   div.className = 'sub-card exp-card-item';
@@ -281,6 +283,16 @@ function agregarExperienciaItem(data = { empresa: '', fechas: '', puesto: '', co
         <label>Descripción / Actividades</label>
         <textarea rows="2" class="exp-comentarios" placeholder="Describe lo que realizaste...">${data.comentarios}</textarea>
       </div>
+    </div>
+    <div class="file-row" style="margin-bottom: 0;">
+      <div>
+        <label style="margin:0;">Evidencia / Carta (Imagen)</label>
+        <div id="${uniqueStatusId}" class="file-status">Ningún archivo seleccionado</div>
+      </div>
+      <label class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;">
+        Subir Imagen
+        <input type="file" accept="image/*" class="hidden" onchange="mostrarArchivoSubido(this, '${uniqueStatusId}')" />
+      </label>
     </div>
   `;
   list.appendChild(div);
@@ -322,6 +334,11 @@ function guardarPaso(siguientePantalla = null) {
   appData.curp = document.getElementById('input-curp').value.trim();
   appData.fechaNacimiento = document.getElementById('input-nacimiento').value;
 
+  appData.academica.secu = {
+    escuela: document.getElementById('secu-escuela').value.trim(),
+    especialidad: document.getElementById('secu-especialidad').value.trim(),
+    anios: document.getElementById('secu-anio').value.trim()
+  };
   appData.academica.prepa = {
     escuela: document.getElementById('prepa-escuela').value.trim(),
     especialidad: document.getElementById('prepa-especialidad').value.trim(),
@@ -390,7 +407,12 @@ function guardarEnLocalStorage(notificar = true, mensaje = '✅ ¡Guardado corre
 function cargarDatosLocales() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    appData = { ...appData, ...JSON.parse(saved) };
+    const parsed = JSON.parse(saved);
+    appData = {
+      ...appData,
+      ...parsed,
+      academica: { ...appData.academica, ...(parsed.academica || {}) }
+    };
   }
   rellenarFormularios();
 }
@@ -404,10 +426,6 @@ function rellenarFormularios() {
   document.getElementById('input-curp').value = appData.curp || '';
   document.getElementById('input-nacimiento').value = appData.fechaNacimiento || '';
 
-  if (appData.ineNombre) {
-    document.getElementById('ine-status').textContent = `Archivo cargado: ${appData.ineNombre}`;
-  }
-
   if (appData.avatarBase64) {
     const preview = document.getElementById('avatar-preview');
     preview.src = appData.avatarBase64;
@@ -415,17 +433,21 @@ function rellenarFormularios() {
     document.getElementById('avatar-placeholder').classList.add('hidden');
   }
 
-  document.getElementById('prepa-escuela').value = appData.academica.prepa.escuela || '';
-  document.getElementById('prepa-especialidad').value = appData.academica.prepa.especialidad || '';
-  document.getElementById('prepa-anio').value = appData.academica.prepa.anios || '';
+  document.getElementById('secu-escuela').value = appData.academica.secu?.escuela || '';
+  document.getElementById('secu-especialidad').value = appData.academica.secu?.especialidad || '';
+  document.getElementById('secu-anio').value = appData.academica.secu?.anios || '';
 
-  document.getElementById('tsu-escuela').value = appData.academica.tsu.escuela || '';
-  document.getElementById('tsu-especialidad').value = appData.academica.tsu.especialidad || '';
-  document.getElementById('tsu-anio').value = appData.academica.tsu.anios || '';
+  document.getElementById('prepa-escuela').value = appData.academica.prepa?.escuela || '';
+  document.getElementById('prepa-especialidad').value = appData.academica.prepa?.especialidad || '';
+  document.getElementById('prepa-anio').value = appData.academica.prepa?.anios || '';
 
-  document.getElementById('ing-escuela').value = appData.academica.ing.escuela || '';
-  document.getElementById('ing-especialidad').value = appData.academica.ing.especialidad || '';
-  document.getElementById('ing-anio').value = appData.academica.ing.anios || '';
+  document.getElementById('tsu-escuela').value = appData.academica.tsu?.escuela || '';
+  document.getElementById('tsu-especialidad').value = appData.academica.tsu?.especialidad || '';
+  document.getElementById('tsu-anio').value = appData.academica.tsu?.anios || '';
+
+  document.getElementById('ing-escuela').value = appData.academica.ing?.escuela || '';
+  document.getElementById('ing-especialidad').value = appData.academica.ing?.especialidad || '';
+  document.getElementById('ing-anio').value = appData.academica.ing?.anios || '';
 
   document.getElementById('extra-cursos').value = appData.extracurricular.cursos || '';
   document.getElementById('extra-congresos').value = appData.extracurricular.congresos || '';
@@ -483,13 +505,16 @@ function actualizarVistaPreviaCV() {
 
   const eduBox = document.getElementById('cv-education-list');
   let eduHTML = '';
-  if (appData.academica.prepa.escuela || appData.academica.prepa.especialidad) {
+  if (appData.academica.secu?.escuela || appData.academica.secu?.especialidad) {
+    eduHTML += `<div class="cv-left-item"><strong>Secundaria ${appData.academica.secu.especialidad ? '(' + appData.academica.secu.especialidad + ')' : ''} - ${appData.academica.secu.escuela}</strong><em>${appData.academica.secu.anios}</em></div>`;
+  }
+  if (appData.academica.prepa?.escuela || appData.academica.prepa?.especialidad) {
     eduHTML += `<div class="cv-left-item"><strong>${appData.academica.prepa.especialidad || 'Preparatoria'} - ${appData.academica.prepa.escuela}</strong><em>${appData.academica.prepa.anios}</em></div>`;
   }
-  if (appData.academica.tsu.escuela || appData.academica.tsu.especialidad) {
+  if (appData.academica.tsu?.escuela || appData.academica.tsu?.especialidad) {
     eduHTML += `<div class="cv-left-item"><strong>TSU ${appData.academica.tsu.especialidad} - ${appData.academica.tsu.escuela}</strong><em>${appData.academica.tsu.anios}</em></div>`;
   }
-  if (appData.academica.ing.escuela || appData.academica.ing.especialidad) {
+  if (appData.academica.ing?.escuela || appData.academica.ing?.especialidad) {
     eduHTML += `<div class="cv-left-item"><strong>ING ${appData.academica.ing.especialidad} - ${appData.academica.ing.escuela}</strong><em>${appData.academica.ing.anios}</em></div>`;
   }
   eduBox.innerHTML = eduHTML || '<div class="cv-left-item">Formación académica por registrar</div>';
@@ -566,7 +591,6 @@ function descargarPDF() {
   const elemento = document.getElementById('print-cv-area');
   const nombreArchivo = (appData.nombre || 'Mi_CV').replace(/\s+/g, '_');
 
-  // Guardamos el scroll actual y subimos arriba para evitar recortes en móvil
   const scrollActual = window.scrollY;
   window.scrollTo(0, 0);
 
@@ -592,14 +616,12 @@ function descargarPDF() {
     .get('pdf')
     .then(function (pdf) {
       window.scrollTo(0, scrollActual);
-      // Descarga directa compatible con Chrome Android y Safari
       pdf.save(`CV_${nombreArchivo}.pdf`);
       mostrarAviso('📄 ¡PDF descargado! Revisa tus descargas.');
     })
     .catch(function (err) {
       window.scrollTo(0, scrollActual);
       console.error('Error al generar PDF:', err);
-      // Respaldo nativo del teléfono si la descarga automática está bloqueada
       mostrarAviso('⚠️ Abriendo vista de impresión del sistema...');
       window.print();
     });
