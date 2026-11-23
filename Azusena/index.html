@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plataforma de Perfil y CV</title>
+  <!-- Solo librería para generar el PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <div class="brand-icon">CV</div>
+      <span>Plataforma de Perfil Profesional</span>
+    </div>
+    <button id="btn-logout" class="navbar-badge hidden" onclick="cerrarSesion()">Cerrar Sesión</button>
+  </header>
+
+  <!-- NAVEGACIÓN DE PASOS (OCULTA EN LOGIN) -->
+  <nav id="steps-nav" class="steps-bar hidden">
+    <button class="step-btn" data-target="bienvenida" onclick="showScreen('bienvenida')">Inicio</button>
+    <button class="step-btn" data-target="perfil" onclick="showScreen('perfil')">1. Perfil</button>
+    <button class="step-btn" data-target="academica" onclick="showScreen('academica')">2. Académica</button>
+    <button class="step-btn" data-target="extracurricular" onclick="showScreen('extracurricular')">3. Extracurricular</button>
+    <button class="step-btn" data-target="laboral" onclick="showScreen('laboral')">4. Laboral</button>
+    <button class="step-btn" data-target="practicas" onclick="showScreen('practicas')">5. Prácticas</button>
+    <button class="step-btn" data-target="habilidades" onclick="showScreen('habilidades')">6. Habilidades</button>
+    <button class="step-btn" data-target="intereses" onclick="showScreen('intereses')">7. Intereses y PDF</button>
+  </nav>
+
+  <main class="main-container">
+
+    <!-- =====================================
+         PANTALLA 0: LOGIN / REGISTRO
+         ===================================== -->
+    <section id="screen-login" class="screen active">
+      <div class="card card-login">
+        <div class="section-header">
+          <h2>Iniciar Sesión</h2>
+          <span>Acceso</span>
+        </div>
+        <form onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label>Tu Nombre (solo si creas cuenta)</label>
+            <input type="text" id="login-nombre" placeholder="Ej. Carlos Daniel Contreras" />
+          </div>
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="login-email" required placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="login-password" required placeholder="••••••••" />
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary" style="flex:1" onclick="handleAuth('login')">Entrar</button>
+            <button type="button" class="btn btn-secondary" style="flex:1" onclick="handleAuth('register')">Crear Cuenta</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- =====================================
+         PANTALLA BIENVENIDA (ESTILO LUMINARY)
+         ===================================== -->
+    <section id="screen-bienvenida" class="screen">
+      <div class="banner-welcome">
+        <div>
+          <h1>¡Bienvenido, <span id="welcome-user-name">Usuario</span>!</h1>
+          <p id="welcome-time">Cargando fecha...</p>
+          <p style="margin-top: 6px; font-weight: 400;">Generador inteligente de Currículum Vitae profesional.</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="showScreen('perfil')">Crear / Editar CV</button>
+          <button class="btn btn-secondary" onclick="showScreen('intereses')">Ver mi PDF</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <h2>Pasos para completar tu CV</h2>
+          <span>7 Secciones</span>
+        </div>
+        <p style="color: var(--texto-gris); line-height: 1.6; margin-bottom: 16px;">
+          Completa cada apartado con tu información. Tus datos se guardan automáticamente en este navegador y al finalizar podrás descargar tu CV en formato PDF con diseño profesional.
+        </p>
+        <button class="btn btn-primary" onclick="showScreen('perfil')">Comenzar ahora &rarr;</button>
+      </div>
+    </section>
+
+    <!-- =====================================
+         1. PERFIL
+         ===================================== -->
+    <section id="screen-perfil" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Datos Personales</h2>
+          <span>Paso 1 de 7</span>
+        </div>
+
+        <div class="avatar-box">
+          <label for="avatar-upload" class="avatar-circle">
+            <img id="avatar-preview" class="hidden" alt="Foto de perfil" />
+            <span id="avatar-placeholder" class="avatar-placeholder">Subir Foto de Perfil</span>
+          </label>
+          <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="handleAvatarUpload(this)" />
+          <small style="margin-top: 6px; color: var(--texto-gris);">Haz clic en el círculo para subir tu foto</small>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="input-nombre" placeholder="Ej. Carlos Daniel Contreras Reynoso" />
+          </div>
+          <div class="form-group">
+            <label>Carrera / Título en CV</label>
+            <input type="text" id="input-puesto-titulo" placeholder="Ej. DESARROLLO DE SOFTWARE" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="input-telefono" placeholder="Ej. 844 669 4894" />
+          </div>
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="input-correo" placeholder="Ej. correo@gmail.com" />
+          </div>
+          <div class="form-group full">
+            <label>Dirección (Calle, Colonia, Ciudad)</label>
+            <input type="text" id="input-direccion" placeholder="Ej. Calle Nogal #822, Saltillo, Coahuila" />
+          </div>
+          <div class="form-group">
+            <label>CURP</label>
+            <input type="text" id="input-curp" placeholder="18 caracteres" />
+          </div>
+          <div class="form-group">
+            <label>Fecha de Nacimiento</label>
+            <input type="date" id="input-nacimiento" />
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div>
+            <label style="margin:0;">Identificación Oficial (INE)</label>
+            <div id="ine-status" class="file-status">Ningún archivo seleccionado</div>
+          </div>
+          <label class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.82rem;">
+            Subir INE
+            <input type="file" accept="image/*,.pdf" class="hidden" onchange="handleIneUpload(this)" />
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="guardarPaso()">Guardar</button>
+          <button class="btn btn-primary" onclick="guardarPaso('academica')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         2. FORMACIÓN ACADÉMICA
+         ===================================== -->
+    <section id="screen-academica" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Formación Académica</h2>
+          <span>Paso 2 de 7</span>
+        </div>
+
+        <div class="sub-card">
+          <h3>Preparatoria / Bachillerato</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre de la Prepa</label>
+              <input type="text" id="prepa-escuela" placeholder="Ej. CBTis 235" />
+            </div>
+            <div class="form-group">
+              <label>Años que cursó</label>
+              <input type="text" id="prepa-anio" placeholder="Ej. 2022 - 2025" />
+            </div>
+            <div class="form-group full">
+              <label>Especialidad</label>
+              <input type="text" id="prepa-especialidad" placeholder="Ej. Técnico en Programación" />
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-card">
+          <h3>TSU (Técnico Superior Universitario)</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Institución / Universidad</label>
+              <input type="text" id="tsu-escuela" placeholder="Ej. UTC" />
+            </div>
+            <div class="form-group">
+              <label>Años que cursó</label>
+              <input type="text" id="tsu-anio" placeholder="Ej. 2025 - 2027" />
+            </div>
+            <div class="form-group full">
+              <label>Especialidad / Carrera</label>
+              <input type="text" id="tsu-especialidad" placeholder="Ej. Desarrollo de Software Multiplataforma" />
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-card">
+          <h3>Ingeniería / Licenciatura</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Institución / Universidad</label>
+              <input type="text" id="ing-escuela" placeholder="Ej. UTC" />
+            </div>
+            <div class="form-group">
+              <label>Años que cursó / Estado</label>
+              <input type="text" id="ing-anio" placeholder="Ej. En curso / 2027 - 2029" />
+            </div>
+            <div class="form-group full">
+              <label>Especialidad / Carrera</label>
+              <input type="text" id="ing-especialidad" placeholder="Ej. Ingeniería en Desarrollo y Gestión de Software" />
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="showScreen('perfil')">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="guardarPaso('extracurricular')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         3. INFORMACIÓN EXTRACURRICULAR
+         ===================================== -->
+    <section id="screen-extracurricular" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Información Extracurricular</h2>
+          <span>Paso 3 de 7</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cursos tomados</label>
+            <input type="text" id="extra-cursos" placeholder="Ej. Curso de React, Python básico..." />
+          </div>
+          <div class="form-group">
+            <label>Certificaciones</label>
+            <input type="text" id="extra-certificaciones" placeholder="Ej. CCNA, Microsoft Azure, SCRUM..." />
+          </div>
+          <div class="form-group">
+            <label>Congresos / Hackathons</label>
+            <input type="text" id="extra-congresos" placeholder="Ej. Congreso Nacional de TI 2025" />
+          </div>
+          <div class="form-group">
+            <label>Conferencias / Talleres</label>
+            <input type="text" id="extra-conferencias" placeholder="Ej. Taller de Ciberseguridad" />
+          </div>
+          <div class="form-group">
+            <label>Idiomas y Nivel</label>
+            <input type="text" id="extra-idiomas" placeholder="Ej. Español, Inglés A2 (En curso)" />
+          </div>
+          <div class="form-group">
+            <label>Voluntariado / Servicio Social</label>
+            <input type="text" id="extra-voluntariado" placeholder="Ej. Apoyo técnico comunitario" />
+          </div>
+          <div class="form-group full">
+            <label>Otros logros o actividades</label>
+            <input type="text" id="extra-otro" placeholder="Ej. Miembro del club de robótica / deportes" />
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="showScreen('academica')">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="guardarPaso('laboral')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         4. EXPERIENCIA LABORAL (DINÁMICO)
+         ===================================== -->
+    <section id="screen-laboral" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Experiencia Laboral y Proyectos</h2>
+          <span>Paso 4 de 7</span>
+        </div>
+
+        <label>¿Tienes experiencia laboral o proyectos realizados?</label>
+        <div class="radio-row">
+          <label><input type="radio" name="tiene_exp" value="si" checked onchange="toggleExperiencia('si')" /> Sí, agregar experiencia</label>
+          <label><input type="radio" name="tiene_exp" value="no" onchange="toggleExperiencia('no')" /> No por el momento</label>
+        </div>
+
+        <div id="experiencia-dinamica-box">
+          <div id="lista-experiencias"></div>
+          <button type="button" class="btn btn-add" onclick="agregarExperienciaItem()">+ Agregar otra experiencia o proyecto</button>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="showScreen('extracurricular')">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="guardarPaso('practicas')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         5. PRÁCTICAS PROFESIONALES
+         ===================================== -->
+    <section id="screen-practicas" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Prácticas Profesionales</h2>
+          <span>Paso 5 de 7</span>
+        </div>
+
+        <label>¿Has realizado prácticas profesionales o estadías?</label>
+        <div class="radio-row">
+          <label><input type="radio" name="tiene_prac" value="si" checked onchange="togglePracticas('si')" /> Sí, ya tengo prácticas</label>
+          <label><input type="radio" name="tiene_prac" value="no" onchange="togglePracticas('no')" /> No, aún no realizo</label>
+        </div>
+
+        <!-- Si tiene prácticas -->
+        <div id="practicas-si-box">
+          <div class="form-group">
+            <label>Nombre del Proyecto o Empresa de Prácticas</label>
+            <input type="text" id="input-practica-nombre" placeholder="Ej. Sistema de Punto de Venta" />
+          </div>
+          <div class="form-group">
+            <label>Descripción de actividades realizadas</label>
+            <textarea id="input-practica-descripcion" rows="4" placeholder="Describe qué desarrollaste o qué funciones tuviste..."></textarea>
+          </div>
+        </div>
+
+        <!-- Si NO tiene prácticas -->
+        <div id="practicas-no-box" class="hidden">
+          <div class="form-group">
+            <label>¿En qué área te gustaría especializarte para tus prácticas?</label>
+            <input type="text" id="input-practica-especializar" placeholder="Ej. Desarrollo Web Frontend, Bases de Datos, Videojuegos, Soporte..." />
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="showScreen('laboral')">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="guardarPaso('habilidades')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         6. HABILIDADES
+         ===================================== -->
+    <section id="screen-habilidades" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Habilidades (Expertise)</h2>
+          <span>Paso 6 de 7</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--texto-gris); margin-bottom: 14px;">Selecciona todas las habilidades que dominas:</p>
+
+        <div class="chips-grid">
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Comunicación efectiva" /> Comunicación efectiva</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Empatía y trato al cliente" /> Empatía</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Análisis de datos" /> Análisis de datos</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Liderazgo" /> Liderazgo</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Trabajo en equipo" /> Trabajo en equipo</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Resolución de problemas" /> Resolución de problemas</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Desarrollo Frontend (HTML, CSS, JS)" /> Desarrollo Frontend</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Desarrollo Backend (C#, Python, SQL)" /> Desarrollo Backend</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Adaptabilidad y aprendizaje rápido" /> Aprendizaje rápido</label>
+          <label class="chip-item"><input type="checkbox" class="skill-checkbox" value="Gestión del tiempo" /> Gestión del tiempo</label>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="showScreen('practicas')">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="guardarPaso('intereses')">Guardar y Siguiente &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================
+         7. INTERESES, ESPECIALIZACIÓN Y PDF FINAL
+         ===================================== -->
+    <section id="screen-intereses" class="screen">
+      <div class="card">
+        <div class="section-header">
+          <h2>Intereses, Especialización y PDF</h2>
+          <span>Paso 7 de 7</span>
+        </div>
+
+        <label>¿En qué áreas te quieres especializar?</label>
+        <div class="chips-grid">
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Desarrollo Web Fullstack" /> Desarrollo Web</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Inteligencia Artificial" /> Inteligencia Artificial</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Ciberseguridad" /> Ciberseguridad</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Desarrollo de Videojuegos" /> Videojuegos (Unity)</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Aplicaciones Móviles" /> Apps Móviles</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Bases de Datos y Cloud" /> Bases de Datos / Cloud</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Diseño UI / UX" /> Diseño UI / UX</label>
+          <label class="chip-item"><input type="checkbox" class="interest-checkbox" value="Arquitectura de Software" /> Arquitectura de Software</label>
+        </div>
+
+        <div class="form-group">
+          <label>Acerca de mí (Resumen profesional para tu CV - opcional, si lo dejas vacío se llena solo)</label>
+          <textarea id="input-about-me" rows="3" placeholder="Estudiante de Desarrollo de Software Multiplataforma con disposición para aprender..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Herramientas y Tecnologías (Tools & Technologies)</label>
+          <textarea id="input-herramientas" rows="3" placeholder="Lenguajes: C#, Python, JavaScript&#10;Web: HTML5, CSS3&#10;Bases de Datos: MySQL, SQL Server"></textarea>
+        </div>
+
+        <div class="btn-group" style="margin-bottom: 20px;">
+          <button class="btn btn-secondary" onclick="guardarPaso()">Actualizar Vista Previa</button>
+          <button class="btn btn-primary" onclick="descargarPDF()">📄 Descargar CV en PDF</button>
+        </div>
+
+        <!-- =====================================
+             PLANTILLA VISUAL DEL CV (IDÉNTICA A TU IMAGEN)
+             ===================================== -->
+        <div class="cv-wrapper">
+          <div id="print-cv-area" class="cv-sheet">
+            
+            <!-- COLUMNA IZQUIERDA OSCURA -->
+            <div class="cv-left">
+              <div class="cv-photo-container">
+                <img id="cv-avatar" class="hidden" alt="Foto CV" />
+              </div>
+
+              <div class="cv-left-section">
+                <div class="cv-left-title">Contact</div>
+                <div class="cv-left-item">
+                  <strong>Phone</strong>
+                  <span id="cv-telefono">-</span>
+                </div>
+                <div class="cv-left-item">
+                  <strong>Email</strong>
+                  <span id="cv-correo">-</span>
+                </div>
+                <div class="cv-left-item">
+                  <strong>Address</strong>
+                  <span id="cv-direccion">-</span>
+                </div>
+                <div class="cv-left-item">
+                  <strong>CURP / Nacimiento</strong>
+                  <span id="cv-curp-nac">-</span>
+                </div>
+              </div>
+
+              <div class="cv-left-section">
+                <div class="cv-left-title">Education</div>
+                <div id="cv-education-list"></div>
+              </div>
+
+              <div class="cv-left-section">
+                <div class="cv-left-title">Expertise</div>
+                <ul id="cv-expertise-list" class="cv-left-list"></ul>
+              </div>
+
+              <div class="cv-left-section">
+                <div class="cv-left-title">Language &amp; Extra</div>
+                <div class="cv-left-item">
+                  <strong id="cv-idiomas">Español</strong>
+                  <span id="cv-extra-resumen" style="font-size: 0.76rem; color: #cbd5e1;"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- COLUMNA DERECHA CLARA -->
+            <div class="cv-right">
+              <div class="cv-header-box">
+                <div class="cv-name-banner">
+                  <h1 id="cv-nombre">NOMBRE DEL CANDIDATO</h1>
+                </div>
+                <div id="cv-puesto" class="cv-role-banner">DESARROLLO DE SOFTWARE</div>
+              </div>
+
+              <div class="cv-right-section">
+                <div class="cv-right-title">About Me</div>
+                <p id="cv-about-me" class="cv-about-text"></p>
+              </div>
+
+              <div class="cv-right-section">
+                <div class="cv-right-title">Experience</div>
+                <div id="cv-experience-list"></div>
+              </div>
+
+              <div class="cv-right-section">
+                <div class="cv-right-title">Tools and Technologies</div>
+                <div id="cv-tools-list" class="cv-tools-text"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- AVISO FLOTANTE DE GUARDADO -->
+  <div id="toast-aviso" class="toast">✅ ¡Datos guardados!</div>
+
+  <!-- LÓGICA PROPIA -->
+  <script src="js/app.js"></script>
+</body>
+</html>

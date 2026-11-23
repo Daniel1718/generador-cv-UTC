@@ -1,0 +1,676 @@
+/* =========================================
+   RESET Y VARIABLES DE COLOR (AZUL, MORADO, MAGENTA)
+   ========================================= */
+:root {
+  --azul-oscuro: #141e4d;
+  --azul-medio: #25337a;
+  --morado-principal: #6d28d9;
+  --magenta-vibrante: #c026d3;
+  --magenta-suave: #f3e8ff;
+  --fondo-claro: #f4f3fa;
+  --blanco: #ffffff;
+  --texto-oscuro: #1e1b4b;
+  --texto-gris: #4b5563;
+  --borde-suave: #e2d9f3;
+  --sombra: 0 10px 25px rgba(20, 30, 77, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 50%, #fae8ff 100%);
+  color: var(--texto-oscuro);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================
+   BARRA SUPERIOR (ESTILO LUMINARY)
+   ========================================= */
+.navbar {
+  background: linear-gradient(90deg, var(--azul-oscuro) 0%, var(--morado-principal) 60%, var(--magenta-vibrante) 100%);
+  color: var(--blanco);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.brand-icon {
+  background: var(--blanco);
+  color: var(--morado-principal);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.navbar-badge {
+  background: var(--blanco);
+  color: var(--magenta-vibrante);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+}
+
+.navbar-badge:hover {
+  transform: scale(1.05);
+}
+
+/* =========================================
+   MENÚ DE PASOS (NAVEGACIÓN RÁPIDA)
+   ========================================= */
+.steps-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--borde-suave);
+}
+
+.step-btn {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--morado-principal);
+  background: var(--blanco);
+  color: var(--morado-principal);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.step-btn:hover,
+.step-btn.active {
+  background: linear-gradient(90deg, var(--morado-principal), var(--magenta-vibrante));
+  color: var(--blanco);
+  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(192, 38, 211, 0.3);
+}
+
+/* =========================================
+   CONTENEDOR PRINCIPAL Y TRANSICIONES
+   ========================================= */
+.main-container {
+  width: 100%;
+  max-width: 780px;
+  margin: 28px auto;
+  padding: 0 16px;
+  flex: 1;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+  animation: pageSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================
+   TARJETAS Y FORMULARIOS
+   ========================================= */
+.card {
+  background: var(--blanco);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--sombra);
+  border-top: 5px solid var(--magenta-vibrante);
+}
+
+.card-login {
+  max-width: 440px;
+  margin: 30px auto;
+}
+
+.banner-welcome {
+  background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+  border-left: 6px solid var(--magenta-vibrante);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--sombra);
+  margin-bottom: 24px;
+}
+
+.banner-welcome h1 {
+  color: var(--morado-principal);
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.banner-welcome p {
+  color: var(--azul-oscuro);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.banner-welcome span {
+  color: var(--magenta-vibrante);
+  font-style: italic;
+}
+
+.section-header {
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--magenta-suave);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h2 {
+  color: var(--azul-oscuro);
+  font-size: 1.35rem;
+}
+
+.section-header span {
+  background: var(--magenta-suave);
+  color: var(--morado-principal);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--azul-oscuro);
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 11px 15px;
+  border-radius: 12px;
+  border: 1.5px solid #d8b4fe;
+  background: #faf8ff;
+  color: var(--texto-oscuro);
+  font-size: 0.92rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--magenta-vibrante);
+  box-shadow: 0 0 0 3px rgba(192, 38, 211, 0.15);
+  background: var(--blanco);
+}
+
+/* =========================================
+   FOTO DE PERFIL Y ARCHIVOS
+   ========================================= */
+.avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar-circle {
+  width: 115px;
+  height: 115px;
+  border-radius: 50%;
+  border: 4px solid var(--magenta-vibrante);
+  background: var(--magenta-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 15px rgba(109, 40, 217, 0.2);
+  transition: transform 0.2s;
+}
+
+.avatar-circle:hover {
+  transform: scale(1.04);
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  color: var(--morado-principal);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 10px;
+}
+
+.file-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #faf5ff;
+  border: 1.5px dashed #c084fc;
+  padding: 12px 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+
+.file-status {
+  font-size: 0.8rem;
+  color: var(--morado-principal);
+  font-weight: 600;
+}
+
+/* =========================================
+   TARJETAS INTERNAS (ACADÉMICA / EXPERIENCIA)
+   ========================================= */
+.sub-card {
+  background: #faf8ff;
+  border: 1px solid var(--borde-suave);
+  border-left: 4px solid var(--morado-principal);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.sub-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sub-card h3 {
+  color: var(--morado-principal);
+  font-size: 1rem;
+}
+
+/* =========================================
+   CHIPS DE HABILIDADES E INTERESES
+   ========================================= */
+.chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.chip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #faf5ff;
+  border: 1.5px solid #e9d5ff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--azul-oscuro);
+  transition: all 0.2s;
+}
+
+.chip-item:hover {
+  border-color: var(--magenta-vibrante);
+  background: #f3e8ff;
+}
+
+.chip-item input[type="checkbox"] {
+  accent-color: var(--magenta-vibrante);
+  width: 17px;
+  height: 17px;
+}
+
+.radio-row {
+  display: flex;
+  gap: 20px;
+  background: #faf5ff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e9d5ff;
+  margin-bottom: 16px;
+}
+
+.radio-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* =========================================
+   BOTONES
+   ========================================= */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--morado-principal), var(--magenta-vibrante));
+  color: var(--blanco);
+  box-shadow: 0 4px 12px rgba(192, 38, 211, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(192, 38, 211, 0.4);
+}
+
+.btn-secondary {
+  background: var(--blanco);
+  color: var(--azul-oscuro);
+  border: 2px solid var(--azul-oscuro);
+}
+
+.btn-secondary:hover {
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+}
+
+.btn-add {
+  background: #ede9fe;
+  color: var(--morado-principal);
+  border: 1.5px dashed var(--morado-principal);
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.btn-add:hover {
+  background: var(--morado-principal);
+  color: var(--blanco);
+}
+
+.btn-danger-sm {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================================
+   AVISO FLOTANTE DE GUARDADO (TOAST)
+   ========================================= */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: linear-gradient(90deg, var(--azul-oscuro), var(--magenta-vibrante));
+  color: var(--blanco);
+  padding: 14px 22px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all 0.35s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================
+   DISEÑO DEL CV PARA VISTA PREVIA Y PDF
+   (IGUAL A LA IMAGEN DEL CV DE REFERENCIA)
+   ========================================= */
+.cv-wrapper {
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.cv-sheet {
+  width: 794px; /* Ancho exacto A4 */
+  min-height: 1120px;
+  background: #ffffff;
+  display: flex;
+  color: #333333;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Columna Izquierda Oscura */
+.cv-left {
+  width: 36%;
+  background-color: #2f3848;
+  color: #ffffff;
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cv-photo-container {
+  width: 185px;
+  height: 225px;
+  margin: 0 auto 24px auto;
+  background: #475569;
+  overflow: hidden;
+  border: 3px solid #ffffff;
+}
+
+.cv-photo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cv-left-section {
+  margin-bottom: 22px;
+}
+
+.cv-left-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  border-bottom: 1.5px solid #94a3b8;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.cv-left-item {
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.cv-left-item strong {
+  display: block;
+  font-size: 0.85rem;
+  color: #f8fafc;
+}
+
+.cv-left-list {
+  padding-left: 16px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.cv-left-list li {
+  margin-bottom: 6px;
+}
+
+/* Columna Derecha Clara */
+.cv-right {
+  width: 64%;
+  padding: 32px 30px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.cv-header-box {
+  position: relative;
+  margin-bottom: 34px;
+  text-align: center;
+}
+
+.cv-name-banner {
+  background-color: #aeb8c9;
+  padding: 26px 18px 36px 18px;
+}
+
+.cv-name-banner h1 {
+  font-size: 1.85rem;
+  font-weight: 500;
+  color: #3f4856;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.cv-role-banner {
+  background-color: #2f3848;
+  color: #ffffff;
+  width: 82%;
+  margin: -22px auto 0 auto;
+  padding: 10px 16px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.cv-right-section {
+  margin-bottom: 22px;
+}
+
+.cv-right-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #4b5563;
+  border-bottom: 2px solid #374151;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+
+.cv-about-text {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #374151;
+  text-align: justify;
+}
+
+.cv-exp-item {
+  margin-bottom: 12px;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.cv-exp-title {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.cv-exp-desc {
+  padding-left: 16px;
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+.cv-tools-text {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #374151;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
